@@ -1,0 +1,17 @@
+# Claude Code local, untracked notes
+CLAUDE.local.md
+
+# macOS
+.DS_Store
+
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+
+# Swift Package Manager
+.build/
+.swiftpm/
