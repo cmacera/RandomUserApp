@@ -12,6 +12,8 @@ import SwiftData
 struct RandomUserApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
+            UserModel.self,
+            DeletedUser.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
