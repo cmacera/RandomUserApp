@@ -13,8 +13,8 @@ import SwiftData
 /// list keeps a stable order (SwiftData does not guarantee fetch order otherwise).
 ///
 /// Only the fields the UI actually renders are stored (list: name/email/phone/picture;
-/// detail: gender/location/registered). The full API payload is richer — we map just
-/// what's needed. This is intentionally NOT `Codable`: decode a separate `UserDTO`
+/// detail: gender/location/registered). The full API payload is richer — only what's
+/// needed is mapped. This is intentionally NOT `Codable`: decode a separate `UserDTO`
 /// and map it, keeping the persistence schema decoupled from the API shape.
 @Model
 final class UserModel {

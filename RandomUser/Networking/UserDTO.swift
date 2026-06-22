@@ -5,7 +5,7 @@
 
 import Foundation
 
-/// Top-level decode target for `GET /api/`. We only care about `results`; `info`
+/// Top-level decode target for `GET /api/`. Only `results` is decoded; `info`
 /// (seed/page/version) is ignored.
 ///
 /// All DTOs are `nonisolated`: the project defaults type isolation to `@MainActor`,
