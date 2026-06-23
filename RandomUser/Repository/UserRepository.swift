@@ -25,8 +25,9 @@ final class UserRepository: UserRepositoryProtocol {
     /// pagination within a session; it is not the persistence mechanism.
     private var nextPage = 1
 
-    /// Guards against the infinite-scroll trigger firing overlapping page requests.
-    private(set) var isLoading = false
+    /// Repository-level guard against overlapping page loads (e.g. the infinite-scroll
+    /// trigger firing twice). The view model owns the loading state the UI observes.
+    private var isLoading = false
 
     init(
         apiClient: APIClient,
