@@ -11,13 +11,7 @@ struct UserRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            AsyncImage(url: URL(string: user.thumbnailURL)) { image in
-                image.resizable()
-            } placeholder: {
-                Circle().fill(.quaternary)
-            }
-            .frame(width: 52, height: 52)
-            .clipShape(Circle())
+            AvatarView(user: user, url: user.thumbnailURL, size: 52)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(user.fullName)

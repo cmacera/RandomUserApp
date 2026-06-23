@@ -13,38 +13,41 @@ struct UserDetailView: View {
     var body: some View {
         List {
             Section {
-                AsyncImage(url: URL(string: user.pictureURL)) { image in
-                    image.resizable().scaledToFill()
-                } placeholder: {
-                    Circle().fill(.quaternary)
-                }
-                .frame(width: 200, height: 200)
-                .clipShape(Circle())
-                .frame(maxWidth: .infinity)
-                .listRowBackground(Color.clear)
+                AvatarView(user: user, url: user.pictureURL, size: 200)
+                    .overlay { Circle().stroke(.tint, lineWidth: 3) }
+                    .frame(maxWidth: .infinity)
+                    .listRowBackground(Color.clear)
             }
 
             Section {
-                LabeledContent("Name", value: user.fullName)
-                LabeledContent("Gender", value: user.gender.capitalized)
-                LabeledContent("Email", value: user.email)
-            }
-
-            Section("Location") {
-                LabeledContent("Street", value: user.street)
-                LabeledContent("City", value: user.city)
-                LabeledContent("State", value: user.state)
+                row("Name", user.fullName)
+                row("Gender", user.gender.capitalized)
+                row("Email", user.email)
             }
 
             Section {
-                LabeledContent(
-                    "Registered",
-                    value: user.registered.formatted(date: .abbreviated, time: .omitted)
-                )
+                row("Street", user.street)
+                row("City", user.city)
+                row("State", user.state)
+            } header: {
+                Text("Location").foregroundStyle(.tint)
+            }
+
+            Section {
+                row("Registered", user.registered.formatted(date: .abbreviated, time: .omitted))
             }
         }
         .navigationTitle(user.fullName)
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    /// A detail row with a teal (accent) label and a default-coloured value.
+    private func row(_ label: String, _ value: String) -> some View {
+        LabeledContent {
+            Text(value)
+        } label: {
+            Text(label).foregroundStyle(.tint)
+        }
     }
 }
 

@@ -50,8 +50,10 @@ struct UserListView: View {
     private var loadingBar: some View {
         if viewModel.isLoading {
             ProgressView()
+                .scaleEffect(1.5)
+                .tint(.teal)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 10)
+                .padding(.vertical, 14)
         }
     }
 
@@ -72,9 +74,23 @@ struct UserListView: View {
     private func emptyState(_ visible: [UserModel]) -> some View {
         if visible.isEmpty && !viewModel.isLoading {
             if viewModel.searchTerm.isEmpty {
-                ContentUnavailableView("No users yet", systemImage: "person.3")
+                ContentUnavailableView {
+                    Label {
+                        Text("No users yet")
+                    } icon: {
+                        Image(systemName: "person.3.fill").foregroundStyle(.tint)
+                    }
+                }
             } else {
-                ContentUnavailableView.search(text: viewModel.searchTerm)
+                ContentUnavailableView {
+                    Label {
+                        Text("No results")
+                    } icon: {
+                        Image(systemName: "magnifyingglass").foregroundStyle(.tint)
+                    }
+                } description: {
+                    Text("No users match “\(viewModel.searchTerm)”.")
+                }
             }
         }
     }
