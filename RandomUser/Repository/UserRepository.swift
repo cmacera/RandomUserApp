@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import OSLog
 import SwiftData
 
 /// Coordinates the API and the local store, and owns the merge logic (dedup +
@@ -18,6 +19,8 @@ final class UserRepository: UserRepositoryProtocol {
     private let context: ModelContext
     private let seed: String
     private let pageSize: Int
+    
+    private let logger = Logger(subsystem: "com.cmacera.RandomUser", category: "Repository")
 
     /// Page cursor for the *current session*. Not persisted: on relaunch `@Query`
     /// shows the stored users with no fetch, and a fresh seed + page 1 simply yields
@@ -79,6 +82,15 @@ final class UserRepository: UserRepositoryProtocol {
         }
 
         try context.save()
+
+        logger.debug("""
+            merge: fetched \(dtos.count, privacy: .public), \
+            inserted \(inserted, privacy: .public), \
+            skipped(tombstoned) \(skippedTombstoned, privacy: .public), \
+            skipped(duplicate) \(dtos.count - inserted - skippedTombstoned, privacy: .public), \
+            tombstones \(tombstoned.count, privacy: .public), \
+            total \(seen.count, privacy: .public)
+            """)
     }
 
     private func tombstonedUUIDs() throws -> Set<String> {
