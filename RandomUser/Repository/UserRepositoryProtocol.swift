@@ -6,7 +6,6 @@
 /// The write path the view model drives: load more, delete. Reads stay in the View
 /// via `@Query`. Behind a protocol so the view model can be exercised with a mock in
 /// tests and SwiftUI previews without a live store.
-@MainActor
 protocol UserRepositoryProtocol {
     /// True while a page load is in flight (drives the list's loading indicator and
     /// guards the infinite-scroll trigger).

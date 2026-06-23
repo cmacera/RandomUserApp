@@ -13,7 +13,6 @@ import SwiftData
 /// `@MainActor` on the main `ModelContext`: at this volume (40/page) merging on the
 /// main context is the simpler, defensible choice — the cost that mattered (network +
 /// JSON decoding) already runs off-main inside the `APIClient`.
-@MainActor
 final class UserRepository: UserRepositoryProtocol {
     private let apiClient: APIClient
     private let context: ModelContext

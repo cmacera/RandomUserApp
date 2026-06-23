@@ -30,7 +30,6 @@ struct UserDTOTests {
     }
 
     @Test("Maps DTO to model: composes street, picks list/detail URLs, injects sortOrder")
-    @MainActor
     func mapsToModel() throws {
         let dto = try JSONDecoder.randomUser()
             .decode(UsersResponseDTO.self, from: Data(Self.sampleJSON.utf8))

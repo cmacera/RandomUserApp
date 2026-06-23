@@ -9,7 +9,6 @@ import Testing
 @testable import RandomUser
 
 @Suite(.serialized)
-@MainActor
 struct UserRepositoryTests {
 
     /// Held as a stored property so the container outlives `context` for the whole
