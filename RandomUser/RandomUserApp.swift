@@ -10,23 +10,33 @@ import SwiftData
 
 @main
 struct RandomUserApp: App {
-    var sharedModelContainer: ModelContainer = {
+    private let sharedModelContainer: ModelContainer
+    private let repository: UserRepository
+
+    init() {
         let schema = Schema([
             UserModel.self,
             DeletedUser.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
+        let container: ModelContainer
         do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            container = try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {
             fatalError("Could not create ModelContainer: \(error)")
         }
-    }()
+
+        sharedModelContainer = container
+        repository = UserRepository(
+            apiClient: RandomUserAPIClient(),
+            context: container.mainContext
+        )
+    }
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            UserListView(repository: repository)
         }
         .modelContainer(sharedModelContainer)
     }
