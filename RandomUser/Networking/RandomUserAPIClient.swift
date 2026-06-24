@@ -5,9 +5,8 @@
 
 import Foundation
 
-/// Live `APIClient` backed by `URLSession`. `nonisolated` Sendable struct so it runs
-/// off the main actor. HTTPS only — plain `http` would be blocked by App Transport
-/// Security, and no ATS exceptions are added.
+/// Live `APIClient` backed by `URLSession`. HTTPS only — plain `http` would be blocked by
+/// App Transport Security, and no ATS exceptions are added.
 nonisolated struct RandomUserAPIClient: APIClient {
     private let session: URLSession
 
@@ -15,7 +14,7 @@ nonisolated struct RandomUserAPIClient: APIClient {
         self.session = session
     }
 
-    func fetchUsers(seed: String, page: Int, results: Int) async throws -> [UserDTO] {
+    @concurrent func fetchUsers(seed: String, page: Int, results: Int) async throws -> [UserDTO] {
         var components = URLComponents()
         components.scheme = "https"
         components.host = "randomuser.me"

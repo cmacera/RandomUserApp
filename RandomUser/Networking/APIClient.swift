@@ -5,16 +5,16 @@
 
 import Foundation
 
-/// Abstraction over the random-user network source. Behind a protocol so the
-/// repository can be tested against a mock instead of the live API.
+/// Abstraction over the random-user network source, behind a protocol so the repository
+/// can be tested against a mock. `seed` is chosen by the caller and makes the API's pages
+/// deterministic (non-overlapping) within a session.
 ///
-/// The requirement is `nonisolated`: the project defaults type isolation to
-/// `@MainActor`, but fetching + decoding should run off the main actor, so callers
-/// must not be pinned to it. `seed` makes pagination coherent within a session
-/// (fewer incoming duplicates); it is the caller's responsibility, not the
-/// persistence mechanism.
+/// `@concurrent` keeps fetching + decoding off the MainActor (under the project's
+/// approachable concurrency a plain `nonisolated async` would run on the caller). It sits
+/// on the *requirement* because the repository calls through the protocol — that's what
+/// governs the call site.
 protocol APIClient: Sendable {
-    nonisolated func fetchUsers(seed: String, page: Int, results: Int) async throws -> [UserDTO]
+    @concurrent func fetchUsers(seed: String, page: Int, results: Int) async throws -> [UserDTO]
 }
 
 /// Errors surfaced by the API layer. `nonisolated` (like the DTOs) so it isn't tied
