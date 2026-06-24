@@ -42,6 +42,13 @@ struct UserListViewModelTests {
         #expect(UserListViewModel.filter(users, matching: "work.com").map(\.uuid) == ["2"])
     }
 
+    @Test("Matches the full name as a contiguous term across first and last")
+    func filterMatchesFullName() {
+        let users = sampleUsers()
+        #expect(UserListViewModel.filter(users, matching: "Alice Smith").map(\.uuid) == ["1"])
+        #expect(UserListViewModel.filter(users, matching: "alice sm").map(\.uuid) == ["1"])  // crosses into surname
+    }
+
     // MARK: - Debounce
 
     @Test("Search term is debounced: not applied immediately, last value wins")

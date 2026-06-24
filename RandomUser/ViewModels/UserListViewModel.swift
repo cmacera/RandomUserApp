@@ -67,7 +67,7 @@ final class UserListViewModel {
         Self.filter(users, matching: searchTerm)
     }
 
-    /// Pure matching logic (case-insensitive, partial, across name / surname / email),
+    /// Pure matching logic (case-insensitive, partial, across name / surname / fullname / email),
     /// separated so it's testable without the debounce.
     static func filter(_ users: [UserModel], matching term: String) -> [UserModel] {
         let term = term.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -75,6 +75,7 @@ final class UserListViewModel {
         return users.filter {
             $0.firstName.localizedCaseInsensitiveContains(term)
                 || $0.lastName.localizedCaseInsensitiveContains(term)
+                || $0.fullName.localizedCaseInsensitiveContains(term)
                 || $0.email.localizedCaseInsensitiveContains(term)
         }
     }
