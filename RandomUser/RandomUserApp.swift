@@ -17,6 +17,7 @@ struct RandomUserApp: App {
         let schema = Schema([
             UserModel.self,
             DeletedUser.self,
+            PaginationState.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

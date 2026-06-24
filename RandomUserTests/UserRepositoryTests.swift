@@ -19,7 +19,7 @@ struct UserRepositoryTests {
     var context: ModelContext { container.mainContext }
 
     init() throws {
-        let schema = Schema([UserModel.self, DeletedUser.self])
+        let schema = Schema([UserModel.self, DeletedUser.self, PaginationState.self])
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
         container = try ModelContainer(for: schema, configurations: [config])
     }

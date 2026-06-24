@@ -17,16 +17,10 @@ import SwiftData
 final class UserRepository: UserRepositoryProtocol {
     private let apiClient: APIClient
     private let context: ModelContext
-    private let seed: String
+    private let initialSeed: String
     private let pageSize: Int
-    
-    private let logger = Logger(subsystem: "com.cmacera.RandomUser", category: "Repository")
 
-    /// Page cursor for the *current session*. Not persisted: on relaunch `@Query`
-    /// shows the stored users with no fetch, and a fresh seed + page 1 simply yields
-    /// new random users, deduped against what's already stored. The seed buys coherent
-    /// pagination within a session; it is not the persistence mechanism.
-    private var nextPage = 1
+    private let logger = Logger(subsystem: "com.cmacera.RandomUser", category: "Repository")
 
     /// Repository-level guard against overlapping page loads (e.g. the infinite-scroll
     /// trigger firing twice). The view model owns the loading state the UI observes.
@@ -40,20 +34,33 @@ final class UserRepository: UserRepositoryProtocol {
     ) {
         self.apiClient = apiClient
         self.context = context
-        self.seed = seed
+        self.initialSeed = seed
         self.pageSize = pageSize
     }
 
-    /// Fetches the next page and merges it into the store. No-op while a load is
-    /// already in flight.
+    /// Fetches and merges the next page, advancing the persisted `PaginationState`
+    /// cursor so pagination resumes across launches. No-op while a load is in flight.
     func loadNextPage() async throws {
         guard !isLoading else { return }
         isLoading = true
         defer { isLoading = false }
 
-        let dtos = try await apiClient.fetchUsers(seed: seed, page: nextPage, results: pageSize)
+        let cursor = try paginationState()
+        let dtos = try await apiClient.fetchUsers(seed: cursor.seed, page: cursor.nextPage, results: pageSize)
         try merge(dtos)
-        nextPage += 1
+        cursor.nextPage += 1
+        try context.save()
+    }
+
+    /// The persisted pagination cursor, created on first use with `initialSeed`.
+    private func paginationState() throws -> PaginationState {
+        if let existing = try context.fetch(FetchDescriptor<PaginationState>()).first {
+            return existing
+        }
+        let cursor = PaginationState(seed: initialSeed)
+        context.insert(cursor)
+        try context.save()
+        return cursor
     }
 
     /// Removes a user and writes a tombstone so a later fetch can't bring it back.
@@ -73,12 +80,16 @@ final class UserRepository: UserRepositoryProtocol {
         var seen = try storedUUIDs()
         var order = try nextSortOrder()
 
+        var inserted = 0
+        var skippedTombstoned = 0
         for dto in dtos {
             let uuid = dto.login.uuid
-            guard !tombstoned.contains(uuid), !seen.contains(uuid) else { continue }
+            if tombstoned.contains(uuid) { skippedTombstoned += 1; continue }
+            guard !seen.contains(uuid) else { continue }
             seen.insert(uuid)
             context.insert(dto.toModel(sortOrder: order))
             order += 1
+            inserted += 1
         }
 
         try context.save()

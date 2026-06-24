@@ -51,7 +51,7 @@ extension Array where Element == UserModel {
 /// `[]` for the empty-state preview). `sortOrder` follows array order.
 func previewContainer(_ users: [UserModel] = .samplePeople) -> ModelContainer {
     let container = try! ModelContainer(
-        for: UserModel.self, DeletedUser.self,
+        for: UserModel.self, DeletedUser.self, PaginationState.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
     for (index, user) in users.enumerated() {
